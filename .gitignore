@@ -1,0 +1,63 @@
+# ==========================
+# Node.js
+# ==========================
+node_modules/
+npm-debug.log*
+package-lock.json.old
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+
+# ==========================
+# Terraform
+# ==========================
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+terraform.tfvars
+terraform.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# ==========================
+# AWS Credentials
+# ==========================
+.aws/
+
+# ==========================
+# SSH Keys
+# ==========================
+*.pem
+*.key
+
+# ==========================
+# Docker
+# ==========================
+.dockerignore
+
+# ==========================
+# Jenkins
+# ==========================
+.jenkins/
+
+# Misc
+*.swp
+*.swo
