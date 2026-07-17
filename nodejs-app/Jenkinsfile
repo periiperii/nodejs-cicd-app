@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Test SSH') {
+            steps {
+                sshagent(credentials: ['prod-ssh-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.233.99.133 "hostname && whoami"
+                    '''
+                }
+            }
+        }
+    }
+}
