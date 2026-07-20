@@ -42,6 +42,18 @@ pipeline {
             }
         }
 
+        stage('Login to ECR') {
+            steps {
+                sh '''
+                    aws ecr get-login-password --region $AWS_REGION | \
+                    docker login \
+                    --username AWS \
+                    --password-stdin \
+                    $ECR_REPO
+                '''
+            }
+        }
+
         stage('Test SSH') {
             steps {
                 sshagent(credentials: ['prod-ssh-key']) {
