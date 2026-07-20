@@ -54,6 +54,22 @@ pipeline {
             }
         }
 
+        stage('Tag Image') {
+            steps {
+                sh '''
+                    docker tag nodejs-app:latest $ECR_REPO:latest
+                '''
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                sh '''
+                    docker push $ECR_REPO:latest
+                '''
+            }
+        }
+
         stage('Test SSH') {
             steps {
                 sshagent(credentials: ['prod-ssh-key']) {
