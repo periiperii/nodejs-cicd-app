@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'ap-south-1'
+        PROD_HOST = '13.235.9.106'
         ECR_REPO = '507096509706.dkr.ecr.ap-south-1.amazonaws.com/nodejs-app'
     }
 
@@ -70,16 +71,47 @@ pipeline {
             }
         }
 
-        stage('Test SSH') {
+        stage('Deploy to Production') {
             steps {
                 sshagent(credentials: ['prod-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@13.235.9.106 "
-                            hostname
-                            whoami
-                        "
+                        ssh -o StrictHostKeyChecking=no ubuntu@$PROD_HOST << 'EOF'
+
+                        aws ecr get-login-password --region ap-south-1 | \
+                        docker login \
+                            --username AWS \
+                            --password-stdin \
+                            507096509706.dkr.ecr.ap-south-1.amazonaws.com
+
+                        docker pull 507096509706.dkr.ecr.ap-south-1.amazonaws.com/nodejs-app:latest
+
+                        docker images
+
+                        docker stop nodejs-app || true
+                        docker rm nodejs-app || true
+
+                        docker run -d \
+                        --name nodejs-app \
+                        --restart unless-stopped \
+                        -p 80:3000 \
+                        507096509706.dkr.ecr.ap-south-1.amazonaws.com/nodejs-app:latest
+
+                        sleep 5
+
+                        docker ps
+
+                        curl -f http://localhost/health
+                        EOF
                     '''
                 }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh '''
+                    docker image prune -f
+                '''
             }
         }
     }
