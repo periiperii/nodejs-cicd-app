@@ -1,14 +1,32 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_REGION = 'ap-south-1'
+        ECR_REPO = '507096509706.dkr.ecr.ap-south-1.amazonaws.com/nodejs-app'
+    }
+
     stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
         stage('Verify Environment') {
             steps {
                 sh '''
+                    echo "===== USER ====="
                     whoami
+
+                    echo "===== DOCKER ====="
                     docker --version
+
+                    echo "===== AWS CLI ====="
                     aws --version
+
+                    echo "===== IAM ROLE ====="
                     aws sts get-caller-identity
                 '''
             }
@@ -18,7 +36,10 @@ pipeline {
             steps {
                 sshagent(credentials: ['prod-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@13.235.9.106 "hostname && whoami"
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.235.9.106 "
+                            hostname
+                            whoami
+                        "
                     '''
                 }
             }
