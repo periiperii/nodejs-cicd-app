@@ -2,6 +2,18 @@ pipeline {
     agent any
 
     stages {
+
+        stage('Verify Environment') {
+            steps {
+                sh '''
+                    whoami
+                    docker --version
+                    aws --version
+                    aws sts get-caller-identity
+                '''
+            }
+        }
+
         stage('Test SSH') {
             steps {
                 sshagent(credentials: ['prod-ssh-key']) {
